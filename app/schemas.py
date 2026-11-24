@@ -52,6 +52,24 @@ class Korrektur(BaseModel):
         return zeilen
 
 
+class RegelEingabe(BaseModel):
+    lieferant_uid: str = Field(min_length=4, max_length=20)
+    lieferant: str | None = Field(default=None, max_length=255)
+    konto: str = Field(min_length=1, max_length=20)
+    kostenstelle: str = Field(min_length=1, max_length=20)
+
+
+class RegelAntwort(RegelEingabe):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    erstellt_von: str
+
+
+class Kommentar(BaseModel):
+    text: str = Field(min_length=1, max_length=1000)
+
+
 class Begruendung(BaseModel):
     grund: str = Field(min_length=3, max_length=500)
 
@@ -84,6 +102,7 @@ class BelegAntwort(BaseModel):
     konto: str | None
     kostenstelle: str | None
     hinweise: list[Hinweis]
+    automatisch: bool
     bearbeitet_von: str | None
     freigegeben_von: str | None
     erstellt_am: datetime

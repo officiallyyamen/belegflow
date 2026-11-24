@@ -171,9 +171,73 @@ def test_protokoll_erkennt_manipulation(rufe, freigegeben):
     assert rufe("GET", "/protokoll/pruefung").json() == {"gueltig": False, "fehler_bei": 2}
 
 
-def test_datei_und_kennzahlen(rufe, lade, pdf):
+def test_datei(rufe, lade, pdf):
     inhalt = pdf()
     nummer = lade(inhalt).json()["id"]
     assert rufe("GET", f"/belege/{nummer}/datei").content == inhalt
-    assert rufe("GET", "/kennzahlen").json()["gesamt"] == 1
     assert rufe("GET", "/belege/999").status_code == 404
+
+
+def test_bild_vom_beleg(rufe, lade, pdf):
+    nummer = lade(pdf()).json()["id"]
+    antwort = rufe("GET", f"/belege/{nummer}/bild")
+    assert antwort.content.startswith(b"\x89PNG")
+    assert antwort.headers["x-seiten"] == "1"
+    assert rufe("GET", f"/belege/{nummer}/bild?seite=2").status_code == 422
+    kaputt = lade(b"%PDF-1.4 kaputt").json()["id"]
+    assert rufe("GET", f"/belege/{kaputt}/bild").status_code == 422
+
+
+def test_uebersicht_zaehlt_automatische_belege(rufe, lade, pdf):
+    assert rufe("GET", "/uebersicht").json()["quote"] is None
+    erster = lade(pdf("PM-1")).json()["id"]
+    zweiter = lade(pdf("PM-2", summe_falsch=10.0)).json()["id"]
+    daten = rufe("GET", "/uebersicht").json()
+    assert daten["quote"] == 50
+    assert daten["fehler"][0]["anzahl"] == 1
+    assert len(daten["monate"]) == 6
+    assert daten["monate"][-1]["anzahl"] == 2
+    rufe("PATCH", f"/belege/{zweiter}", json={"brutto": "600.00"})
+    assert rufe("GET", "/uebersicht").json()["quote"] == 50
+    rufe("PATCH", f"/belege/{erster}", json={"konto": "7600"})
+    assert rufe("GET", f"/belege/{erster}").json()["automatisch"] is True
+
+
+def test_regel_setzt_konto(rufe, lade, pdf):
+    regel = {"lieferant_uid": "ATU 1234 5675", "lieferant": "Papier", "konto": "7600", "kostenstelle": "200"}
+    assert rufe("POST", "/regeln", "t-ben", json=regel).status_code == 403
+    angelegt = rufe("POST", "/regeln", json=regel)
+    assert angelegt.status_code == 201
+    assert rufe("POST", "/regeln", json=regel).status_code == 409
+    assert lade(pdf()).json()["kostenstelle"] == "200"
+    assert rufe("DELETE", f"/regeln/{angelegt.json()['id']}").status_code == 204
+    assert rufe("GET", "/regeln").json() == []
+
+
+def test_suche_und_lieferanten(rufe, lade, pdf):
+    lade(pdf("PM-1"))
+    lade(pdf("PM-2"))
+    assert len(rufe("GET", "/belege?suche=pm-2").json()) == 1
+    assert rufe("GET", "/belege?suche=%25").json() == []
+    assert rufe("GET", "/lieferanten").json()[0]["belege"] == 2
+
+
+def test_benutzerliste_enthaelt_keine_tokens(rufe):
+    antwort = rufe("GET", "/benutzer")
+    assert len(antwort.json()) == 4
+    assert "t-anna" not in antwort.text
+
+
+def test_oberflaeche_hat_schutz(client):
+    assert "default-src 'self'" in client.get("/").headers["content-security-policy"]
+    assert client.get("/static/icons.svg").headers["cache-control"] == "no-cache"
+    assert client.get("/belege").headers["cache-control"] == "no-store"
+
+
+def test_kommentar_steht_im_verlauf(rufe, lade, pdf):
+    nummer = lade(pdf()).json()["id"]
+    antwort = rufe("POST", f"/belege/{nummer}/kommentar", "t-ben", json={"text": "Bitte prüfen"})
+    assert antwort.status_code == 201
+    assert antwort.json()[-1]["details"] == {"text": "Bitte prüfen"}
+    assert rufe("POST", f"/belege/{nummer}/kommentar", "t-eingang", json={"text": "x"}).status_code == 403
+    assert rufe("GET", "/protokoll/pruefung").json()["gueltig"] is True

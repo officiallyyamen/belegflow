@@ -3,7 +3,7 @@ from decimal import Decimal
 from functools import lru_cache
 from pathlib import Path
 
-from sqlalchemy import JSON, Date, DateTime, ForeignKey, Integer, String, create_engine
+from sqlalchemy import JSON, Boolean, Date, DateTime, ForeignKey, Integer, String, create_engine
 from sqlalchemy.engine import make_url
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 from sqlalchemy.types import TypeDecorator
@@ -51,9 +51,21 @@ class Beleg(Basis):
     kostenstelle: Mapped[str | None] = mapped_column(String(20))
     hinweise: Mapped[list] = mapped_column(JSON, default=list)
     bestaetigte_iban: Mapped[str | None] = mapped_column(String(40))
+    automatisch: Mapped[bool] = mapped_column(Boolean, default=False)
     bearbeitet_von: Mapped[str | None] = mapped_column(String(80))
     freigegeben_von: Mapped[str | None] = mapped_column(String(80))
     erstellt_am: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
+
+
+class Regel(Basis):
+    __tablename__ = "regeln"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    lieferant_uid: Mapped[str] = mapped_column(String(20), unique=True)
+    lieferant: Mapped[str | None] = mapped_column(String(255))
+    konto: Mapped[str] = mapped_column(String(20))
+    kostenstelle: Mapped[str] = mapped_column(String(20))
+    erstellt_von: Mapped[str] = mapped_column(String(80))
 
 
 class Protokoll(Basis):

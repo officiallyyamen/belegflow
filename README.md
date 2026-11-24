@@ -2,6 +2,12 @@
 
 Automatische Erfassung von Eingangsrechnungen: Belege kommen per E-Mail über n8n, werden ausgelesen, geprüft, von Menschen freigegeben und für die Buchhaltung exportiert.
 
+![Übersicht](docs/uebersicht.png)
+
+![Beleg prüfen und freigeben](docs/beleg.png)
+
+## Ablauf
+
 ```mermaid
 flowchart LR
     A[Postfach] --> B[n8n]
@@ -21,7 +27,9 @@ flowchart LR
 - **Betrugsschutz:** eine geänderte IBAN blockiert die Freigabe, bis jemand sie mit Begründung bestätigt
 - **Vier-Augen-Prinzip:** wer einen Beleg korrigiert, kann ihn nicht selbst freigeben
 - **Nachvollziehbarkeit:** jede Aktion steht in einem verketteten Protokoll, Änderungen an Einträgen fallen auf
-- **Kontierung:** Konto und Kostenstelle werden vom letzten Beleg des Lieferanten vorgeschlagen
+- **Kontierung:** Konto und Kostenstelle kommen aus Regeln oder vom letzten Beleg des Lieferanten
+- **Zusammenarbeit:** Kommentare und Verlauf direkt am Beleg
+- **Auswertung:** Anteil der automatisch richtig gelesenen Belege, offene Fehler, Belege pro Monat
 
 Die KI entscheidet nichts. Sie liest nur Werte aus, die danach durch feste Regeln und eine Person geprüft werden.
 
@@ -91,3 +99,7 @@ Die CI führt die Tests mit SQLite und mit PostgreSQL aus.
 - Die regelbasierte Auslesung versteht Textrechnungen mit üblichen deutschen Bezeichnungen, andere Layouts brauchen Claude.
 - Die Prüfungen ersetzen keine steuerliche Beratung.
 - Es gibt keine Benutzerverwaltung mit Single Sign-on, Zugänge laufen über Tokens.
+
+## Verwendete Bausteine
+
+Schrift Figtree (SIL Open Font License) und Icons von Phosphor (MIT) liegen im Projekt, die Oberfläche lädt nichts von fremden Servern.

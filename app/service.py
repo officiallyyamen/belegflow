@@ -8,7 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from .config import Benutzer, einstellungen
-from .db import Beleg, Protokoll
+from .db import Beleg, Protokoll, Regel
 from .extraktion import ExtraktionsFehler, als_kennung, extraktor, felder, leere_rechnung
 from .pruefung import gleicher_lieferant, hinweis, pruefe
 
@@ -84,6 +84,11 @@ def bewerte(beleg: Beleg, db: Session, zusatz: list[dict] | None = None) -> None
 def konto_vorschlag(beleg: Beleg, db: Session) -> None:
     if not (beleg.lieferant_uid or beleg.lieferant):
         return
+    if beleg.lieferant_uid:
+        regel = db.scalar(select(Regel).where(Regel.lieferant_uid == beleg.lieferant_uid))
+        if regel:
+            beleg.konto, beleg.kostenstelle = regel.konto, regel.kostenstelle
+            return
     letzter = db.scalar(
         select(Beleg)
         .where(gleicher_lieferant(beleg), Beleg.status.in_(("freigegeben", "exportiert")), Beleg.id != beleg.id)
@@ -134,6 +139,7 @@ def nimm_auf(db: Session, dateiname: str, inhalt: bytes, benutzer: Benutzer) -> 
         raise Konflikt("Diese Datei wurde bereits erfasst") from fehler
     konto_vorschlag(beleg, db)
     bewerte(beleg, db, zusatz)
+    beleg.automatisch = beleg.status == "bereit"
     protokolliere(db, beleg, benutzer.name, "erfasst", extraktor=leser.name, status=beleg.status)
     db.commit()
     return beleg
@@ -153,6 +159,8 @@ def korrigiere(db: Session, beleg: Beleg, werte: dict, benutzer: Benutzer) -> Be
             setattr(beleg, feld, wert)
     if neu:
         beleg.bearbeitet_von = benutzer.name
+        if set(neu) - {"konto", "kostenstelle"}:
+            beleg.automatisch = False
         bewerte(beleg, db)
         protokolliere(db, beleg, benutzer.name, "korrigiert", alt=alt, neu=neu, status=beleg.status)
         db.commit()
@@ -198,3 +206,17 @@ def lehne_ab(db: Session, beleg: Beleg, grund: str, benutzer: Benutzer) -> Beleg
     protokolliere(db, beleg, benutzer.name, "abgelehnt", grund=grund)
     db.commit()
     return beleg
+
+
+def lege_regel_an(db: Session, werte: dict, benutzer: Benutzer) -> Regel:
+    werte["lieferant_uid"] = als_kennung(werte["lieferant_uid"], 20)
+    if not werte["lieferant_uid"]:
+        raise Ungueltig("UID ist ungültig")
+    regel = Regel(**werte, erstellt_von=benutzer.name)
+    db.add(regel)
+    try:
+        db.commit()
+    except IntegrityError as fehler:
+        db.rollback()
+        raise Konflikt("Für diesen Lieferanten gibt es schon eine Regel") from fehler
+    return regel

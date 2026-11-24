@@ -19,6 +19,7 @@ LIEFERANT = ("Papier Muster GmbH", "ATU12345675", "AT61 1904 3002 3457 3201")
 
 @pytest.fixture
 def client(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
     url = os.environ.get("TEST_DATENBANK_URL") or f"sqlite:///{(tmp_path / 'test.db').as_posix()}"
     monkeypatch.setenv("BELEGFLOW_DATENBANK_URL", url)
     monkeypatch.setenv("BELEGFLOW_SPEICHER", str(tmp_path / "belege"))
