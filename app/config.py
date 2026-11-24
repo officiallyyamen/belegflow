@@ -2,15 +2,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
-from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
-Rolle = Literal["eingang", "buchhaltung", "freigabe"]
-
-
-class Benutzer(BaseModel):
-    name: str
-    rollen: list[Rolle]
 
 
 class Einstellungen(BaseSettings):
@@ -18,11 +10,13 @@ class Einstellungen(BaseSettings):
 
     datenbank_url: str = "sqlite:///./daten/belegflow.db"
     speicher: Path = Path("./daten/belege")
-    extraktor: Literal["regeln", "claude"] = "regeln"
-    claude_modell: str = "claude-opus-5-5"
+    extraktor: Literal["regeln", "modell"] = "regeln"
+    modell: str = ""
     max_mb: int = 10
     steuersaetze: list[str] = ["0", "10", "13", "20"]
-    benutzer: dict[str, Benutzer] = {}
+    sichere_cookies: bool = True
+    sitzung_stunden: int = 12
+    wechselkurse: bool = True
 
 
 @lru_cache

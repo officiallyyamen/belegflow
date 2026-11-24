@@ -1,0 +1,330 @@
+.rahmen { grid-template-columns:232px minmax(0, 1fr); }
+.anmeldung { background:var(--dunkel); }
+.seitenleiste { gap:0; padding:0; border-right:1px solid var(--linie); }
+.mandantknopf { margin:0; padding:16px 16px; border:0; border-bottom:1px solid var(--linie); border-radius:0; background:none; color:var(--text); }
+.mandantknopf .zeichen { background:var(--akzent-zart); color:var(--text); border-radius:8px; font-size:14px; font-weight:500; }
+#menue { padding:20px 8px 8px; }
+.gruppe { margin-bottom:20px; gap:4px; }
+.seitenleiste a, .seitenleiste .unten button:not(.knopf), .seitenleiste .gruppe button { display:flex; align-items:center; gap:12px; width:100%; min-height:36px; padding:8px 8px; border:0; border-radius:8px; background:none; color:inherit; text-align:left; font-size:14px; }
+.seitenleiste a:hover, .seitenleiste .unten button:not(.knopf):hover, .seitenleiste .gruppe button:hover { background:var(--feld); color:var(--text); }
+.seitenleiste a.an, .seitenleiste a.an:hover { background:var(--leiste-an); color:var(--text); font-weight:400; }
+.seitenleiste kbd { margin-left:auto; font:11px Figtree, sans-serif; color:var(--leise); }
+.seitenleiste .marke2 { background:var(--ring); color:var(--text); }
+.seitenleiste a.an .marke2 { background:var(--dunkel); color:var(--flaeche); }
+#glocke .marke2 { background:var(--fehler); color:var(--flaeche); }
+.unten { padding:8px; gap:4px; }
+.unten .erstellen { margin-bottom:8px; color:var(--text); font-weight:500; }
+.nutzer { display:flex; align-items:center; border-top:1px solid var(--linie); padding:8px 8px; }
+.nutzer .reihe { flex-wrap:nowrap; gap:0; }
+.seite { padding:24px 28px 48px; max-width:none; margin:0; gap:24px; }
+.seite.schmal { max-width:860px; }
+h1 { font-size:24px; font-weight:500; }
+.gruss { font-size:24px; }
+.untertitel { color:var(--leise); font-size:16px; margin-top:8px; }
+.karte { border-radius:8px; }
+.knopf { border-radius:8px; min-height:36px; }
+.knopf.haupt { font-weight:500; }
+.abschnittstitel { display:flex; align-items:center; gap:12px; font-size:16px; font-weight:400; margin-bottom:16px; }
+.abschnittstitel .still { margin-left:4px; }
+select.still { width:auto; border:0; background:none; font-size:14px; padding:4px; }
+.kachelreihe { display:grid; grid-template-columns:repeat(auto-fill, 226px); gap:8px; }
+.kachelreihe.schmal { grid-template-columns:repeat(auto-fill, 198px); }
+.aufgabe { display:flex; flex-direction:column; min-height:178px; padding:12px 8px 8px; gap:4px; }
+.aufgabe > strong { padding:0 1px 8px; }
+.aufgabenzeile { display:flex; justify-content:space-between; gap:8px; padding:8px 8px; border-radius:4px; background:var(--feld); color:var(--text); font-size:14px; }
+.aufgabenzeile:hover { text-decoration:none; filter:brightness(.97); }
+.aufgabenzeile span { font-weight:500; }
+.aufgabenzeile.rotzeile { background:var(--fehler-zart); color:var(--fehler); }
+.aufgabenzeile.akzentzeile { background:var(--akzent-zart); color:var(--akzent); }
+.erledigt { flex:1; display:grid; place-content:center; justify-items:center; gap:8px; border-radius:4px; background:var(--gut-zart); color:var(--gut); font-size:14px; font-weight:500; }
+.neukachel { display:flex; align-items:end; gap:8px; min-height:146px; padding:12px; border:1px solid var(--linie); border-radius:8px; background:var(--feld); color:var(--text); font-size:14px; font-weight:500; text-align:left; }
+.neukachel:hover { background:var(--ring); text-decoration:none; }
+.minikarte { display:grid; gap:8px; padding:12px; align-content:start; min-height:146px; }
+.minikarte:hover { text-decoration:none; }
+.minikarte .reihe { flex-wrap:nowrap; }
+.minikarte .plastik { padding:12px 4px; border-radius:4px; }
+.minikarte .knopf { min-height:24px; width:24px; }
+.minikarte .mittel { font-size:16px; }
+.plastik { background:var(--dunkel); }
+.unten2 { margin-top:auto; }
+.prozent { padding:1px 8px; border-radius:4px; background:var(--gut-zart); color:var(--gut); font-size:13px; white-space:nowrap; }
+.prozent.ueber { background:var(--fehler-zart); color:var(--fehler); }
+.fortschritt { height:6px; }
+.fortschritt span, .fortschritt.knapp span { background:var(--balken); }
+.fortschritt.ueber span { background:var(--fehler); }
+.pille { border-radius:4px; padding:2px 8px; font-size:12px; font-weight:500; box-shadow:inset 0 0 0 1px color-mix(in srgb, currentColor 18%, transparent); }
+.pille .icon { display:none; }
+td .pille.info { background:var(--feld); color:var(--text); }
+.merkmale { gap:4px; }
+.merkmale span { width:23px; height:23px; display:grid; place-items:center; border-radius:4px; background:var(--feld); }
+.merkmale .icon { width:14px; height:14px; }
+.merkmale .fehler { background:var(--fehler-zart); }
+.reiter { gap:20px; box-shadow:none; }
+.reiter a { padding:8px 0 8px; color:var(--text); font-size:14px; font-weight:500; }
+.reiter a.an { color:var(--text); border-color:var(--dunkel); }
+.marke2 { border-radius:8px; min-width:19px; line-height:18px; font-size:12px; }
+.reiter .marke2 { background:var(--ring); color:var(--text); }
+.reiter .an .marke2 { background:var(--dunkel); color:var(--flaeche); }
+.umschalter { padding:0; gap:0; background:none; }
+.umschalter a, .umschalter button { padding:8px 12px; color:var(--text); border-radius:8px; font-size:14px; font-weight:500; }
+.umschalter .an { background:var(--leiste-an); box-shadow:none; }
+.hinweis { justify-self:start; border:1px solid color-mix(in srgb, var(--punkt) 35%, transparent); border-radius:8px; color:var(--text); padding:8px 12px; font-size:14px; }
+.hinweis > .icon { color:var(--punkt); }
+.hinweis .knopf { background:var(--akzent); color:var(--akzent-text); border:0; min-height:30px; }
+.sammel, .meldung { background:var(--dunkel); }
+.meldung.fehler { background:#9d1f18; }
+th { background:var(--feld); font-weight:500; }
+th, td { padding:8px 12px; border-right:1px solid var(--linie); font-size:14px; }
+th:last-child, td:last-child { border-right:0; }
+td.wahl, th.wahl { padding-right:8px; width:40px; }
+.belegraster { grid-template-columns:minmax(0, 1fr) 270px 350px; }
+.links { border:0; border-left:1px solid var(--linie); }
+.mitte { background:var(--buehne); }
+.blatt { padding:0 24px 16px; }
+.blatt img, .erechnung { border-radius:4px; box-shadow:0 1px 4px rgb(36 19 43 / .12); }
+.belegkopf { min-height:56px; padding:8px 16px; font-weight:500; font-size:14px; }
+.belegtitel { display:grid; gap:4px; padding:16px 16px 8px; }
+.belegtitel h1 { font-size:16px; }
+.ergebnis { display:flex; align-items:center; gap:4px; padding:2px 8px; border:0; border-radius:4px; background:var(--gut-zart); color:var(--gut); font-size:13px; }
+.ergebnis.schlecht { background:var(--fehler-zart); color:var(--fehler); }
+.ergebnis .icon { width:14px; height:14px; }
+.reiterzeile button { padding:12px 4px; font-size:13px; white-space:nowrap; }
+.reiterzeile .an { color:var(--text); border-color:var(--dunkel); }
+.person.maschine { background:none; color:var(--punkt); }
+.verlauf { position:relative; }
+.verlauf::before { content:""; position:absolute; left:16px; top:20px; bottom:20px; border-left:1px solid var(--linie); }
+.verlauf li { position:relative; font-size:13px; }
+.person.maschine .icon { background:var(--flaeche); }
+.verlauf .werte { grid-template-columns:1fr; gap:0; background:none; padding:0; }
+.verlauf .werte dd { margin-bottom:4px; }
+.punkt2 { background:var(--punkt); }
+.naechster { box-shadow:none; background:var(--flaeche); }
+.naechster h3 { font-size:12px; font-weight:500;   color:var(--leise); }
+.feld { color:var(--text); }
+.feld small { color:var(--leise); }
+:where(input:not([type=checkbox]):not([type=file]), select, textarea) { background:var(--flaeche); border-radius:8px; min-height:36px; }
+fieldset:disabled :where(input, select, textarea) { background:var(--feld); }
+.stab { border-radius:4px 4px 0 0; }
+.schacht { background:none; }
+dialog { border-radius:8px; }
+@media (max-width:1280px) { .belegraster { grid-template-columns:minmax(0, 1fr) 240px 320px; } }
+@media (max-width:980px) {
+  .rahmen, .belegraster { grid-template-columns:minmax(0, 1fr); }
+  .leiste { color:var(--text); border-bottom:1px solid var(--linie); }
+  .leiste .knopf { color:var(--text); }
+}
+@media (max-width:640px) { .seite { padding:16px 16px 60px; } .kachelreihe { grid-template-columns:minmax(0, 1fr); } .kachelreihe.schmal { grid-template-columns:1fr 1fr; } }
+.seitenleiste { overflow:hidden; }
+#menue { flex:1; min-height:0; overflow-y:auto; scrollbar-width:thin; }
+@media (max-height:860px) {
+  .seitenleiste a, .seitenleiste .unten button:not(.knopf), .seitenleiste .gruppe button { min-height:31px; padding:4px 8px; font-size:13px; }
+  #menue { padding-top:10px; }
+  .gruppe { margin-bottom:8px; gap:1px; }
+  .unten { padding:4px 8px; gap:1px; }
+  .unten .erstellen { margin-bottom:4px; min-height:32px; }
+  .mandantknopf { padding:8px 16px; }
+  .nutzer { padding:4px 8px; }
+}
+.ueberblick, .erstattung { display:flex; flex-direction:column; gap:4px; min-height:146px; padding:12px; color:var(--text); }
+.erstattung:hover { text-decoration:none; background:var(--feld); }
+.ueberblick span, .titelunten { margin-top:auto; }
+.ueberblick .gross { font-size:24px; }
+.warntext { color:var(--warn); }
+.rotkarte { background:var(--fehler-zart); }
+.dreiteiler { display:grid; grid-template-columns:232px minmax(0, 1fr) 264px; min-height:100dvh; }
+.teillinks, .teilrechts { display:flex; flex-direction:column; gap:12px; padding:24px 16px; position:sticky; top:0; height:100dvh; overflow-y:auto; }
+.teillinks { border-right:1px solid var(--linie); }
+.teilrechts { border-left:1px solid var(--linie); }
+.teilmitte { padding:24px 20px; display:grid; gap:16px; align-content:start; min-width:0; }
+.teilan { display:grid; gap:4px; padding:12px 12px; border-radius:8px; background:var(--leiste-an); }
+.teillinks h3 { margin-top:8px; }
+.historie { display:grid; grid-template-columns:18px 1fr; gap:8px; padding:8px 4px; color:var(--text); font-size:13px; border-radius:8px; }
+.historie:hover { background:var(--feld); text-decoration:none; }
+.historie .icon { color:var(--gut); width:17px; height:17px; }
+.historie strong { font-weight:500; }
+.formate { display:grid; gap:8px; }
+.formatkarte { display:grid; justify-items:center; gap:4px; width:100%; padding:12px; border:1px solid var(--linie); border-radius:8px; background:var(--feld); color:var(--text); text-align:center; font-size:14px; }
+.formatkarte .icon { width:24px; height:24px; color:var(--akzent); }
+button.formatkarte.an { border-color:var(--akzent); background:var(--akzent-zart); }
+.summenkarte { display:grid; gap:8px; padding:12px; border-radius:8px; background:var(--feld); }
+.lueckefuell { flex:1; }
+@media (max-width:1280px) { .dreiteiler { grid-template-columns:200px minmax(0, 1fr) 230px; } }
+@media (max-width:980px) { .dreiteiler { grid-template-columns:minmax(0, 1fr); } .teillinks, .teilrechts { position:static; height:auto; border:0; padding:16px 16px; } }
+.feld select { width:100%; }
+.filterzeile[hidden] { display:none; }
+.filterzeile { align-items:center; }
+.filterzeile .suchfeld { max-width:280px; }
+.hinweis:empty, .seite > div:empty { display:none; }
+.naechster .knopf { flex:1; } .sperrhinweis, .naechster p { gap:8px; }
+.zweispaltig { margin-top:8px; }
+body, input, select, textarea { font-variant-numeric:tabular-nums; }
+strong, b, h1, h2, h3, dt, th { font-weight:500; }
+h1, .gruss { font-size:28px; line-height:1.2; font-weight:500; }
+h2 { font-size:16px; }
+h3 { font-size:14px; }
+.icon { width:18px; height:18px; }
+.logo { font-weight:600; font-size:20px; }
+.zeichen { border-radius:8px; }
+.anmeldung { background:var(--buehne); }
+.anmeldung form { border:1px solid var(--linie); box-shadow:0 8px 24px rgb(0 0 0 / .06); }
+.rahmen { grid-template-columns:248px minmax(0, 1fr); }
+.mandantknopf .zeichen { background:var(--flaeche); color:var(--text); border:1px solid var(--linie); }
+.oben { padding:16px 12px 0; }
+.oben .erstellen { width:100%; justify-content:flex-start; }
+#menue { padding:16px 12px; }
+.unten { padding:8px 12px; }
+.gruppe { margin-bottom:20px; gap:2px; }
+.seitenleiste a, .seitenleiste .unten button:not(.knopf), .seitenleiste .gruppe button { gap:8px; min-height:32px; padding:4px 8px; border-radius:8px; }
+.seitenleiste a:hover, .seitenleiste .unten button:not(.knopf):hover, .seitenleiste .gruppe button:hover { background:var(--ring); }
+.seitenleiste a.an, .seitenleiste a.an:hover { background:var(--leiste-an); color:var(--text); font-weight:500; box-shadow:inset 0 0 0 1px var(--linie); }
+.seitenleiste .icon { color:var(--leise); }
+.seitenleiste .marke2, .seitenleiste a.an .marke2, .reiter .marke2, .reiter .an .marke2, .marke2 { background:none; color:var(--leise); padding:0; min-width:0; font-size:12px; font-weight:400; text-align:right; }
+#glocke .marke2 { background:none; color:var(--fehler); }
+.seitenleiste kbd { padding:0 4px; border:1px solid var(--linie); border-radius:4px; background:var(--flaeche); }
+.seite { padding:32px 32px 64px; gap:24px; max-width:1560px; }
+.karte { border-radius:12px; padding:20px; }
+.knopf, .plastik, :where(input:not([type=checkbox]):not([type=file]), select, textarea) { border-radius:8px; }
+.reiter a.an, .reiterzeile .an { color:var(--text); border-color:var(--akzent); font-weight:500; }
+.umschalter { padding:2px; border-radius:8px; background:var(--feld); }
+.umschalter a, .umschalter button { padding:4px 12px; border-radius:6px; }
+.umschalter .an { background:var(--flaeche); box-shadow:0 0 0 1px var(--linie); }
+.hinweis { border:1px solid var(--linie); background:var(--feld); border-radius:8px; }
+.hinweis > .icon { color:var(--leise); }
+.hinweis .knopf { background:var(--flaeche); color:var(--text); border:1px solid var(--linie); }
+th { color:var(--leise); font-weight:400; font-size:13px; }
+th, td { border-right:0; padding:8px 16px; }
+tbody tr:hover { background:var(--feld); }
+.pille { box-shadow:none; padding:2px 8px; }
+.pille.info { background:var(--feld); color:var(--text); }
+.merkmale span, .merkmale .fehler { background:none; width:20px; height:20px; }
+.person.maschine, .person.maschine .icon { color:var(--leise); }
+.person { border-radius:50%; }
+.naechster h3 { color:var(--leise); font-size:13px; }
+.meldung, .sammel { background:#23262b; }
+.meldung.fehler { background:#9d1f18; }
+.abschnitttitel { margin-bottom:12px; }
+.betrag { font-variant-numeric:tabular-nums; white-space:nowrap; text-align:right; }
+.hauptreihe { display:grid; grid-template-columns:minmax(0, 2fr) minmax(320px, 1fr); gap:24px; align-items:stretch; }
+.nebenreihe { display:grid; grid-template-columns:minmax(0, 1fr) minmax(0, 2fr); gap:24px; }
+.ausgaben { display:flex; flex-direction:column; }
+.hauptzahl { display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 12px; margin:12px 0 24px; }
+.hauptzahl strong { font-size:32px; line-height:1.1; }
+.diagramm { position:relative; display:grid; grid-template:minmax(240px, 1fr) 24px / 56px minmax(0, 1fr); flex:1; min-height:280px; }
+.achse { display:flex; flex-direction:column; justify-content:space-between; margin:-8px 0; color:var(--leise); font-size:12px; line-height:16px; text-align:right; padding-right:12px; }
+.linien { grid-area:1 / 2; display:flex; flex-direction:column; justify-content:space-between; }
+.linien i { border-top:1px solid var(--linie); }
+.saeulen { grid-area:1 / 2; display:flex; align-items:end; gap:8px; padding:0 8px; }
+.saeule { display:flex; align-items:end; height:100%; flex:1; }
+.saeule .stab { width:100%; max-width:44px; margin:0 auto; border-radius:4px 4px 0 0; background:var(--saeule); transition:background-color .15s cubic-bezier(.22, 1, .36, 1); }
+.saeule:hover .stab { background:var(--balken); }
+.saeule.betont .stab { background:var(--akzent); }
+.monate { grid-area:2 / 2; display:flex; gap:8px; padding:8px 8px 0; color:var(--leise); font-size:12px; line-height:16px; }
+.monate span { flex:1; text-align:center; }
+.monate .betont { color:var(--text); }
+.arbeit { padding:20px 0 8px; }
+.arbeit h2, .arbeit > p { padding:0 20px 8px; }
+.arbeit li + li { border-top:1px solid var(--linie); }
+.arbeit a { display:grid; grid-template-columns:80px 1fr auto 16px; align-items:center; gap:8px; min-height:40px; padding:4px 16px 4px 20px; color:var(--text); }
+.arbeit a:hover { background:var(--feld); text-decoration:none; }
+.arbeit a .icon { width:16px; height:16px; color:var(--leise); }
+.arbeit .leise { font-size:13px; }
+.arbeit .faellig span:not(.leise) { color:var(--fehler); }
+.verteilung { gap:16px; margin-top:16px; }
+.verteilung li { gap:8px; }
+.budgetliste { margin-top:8px; }
+.budgetzeile { display:grid; grid-template-columns:minmax(160px, 1fr) minmax(120px, 2fr) 168px 48px 32px; align-items:center; gap:16px; min-height:56px; border-top:1px solid var(--linie); }
+.budgetzeile:first-child { border-top:0; }
+.budgetzeile small { display:block; font-size:12px; }
+.fortschritt { height:4px; border-radius:2px; }
+.fortschritt span, .fortschritt.knapp span { background:var(--balken); border-radius:2px; }
+.fortschritt.ueber span { background:var(--fehler); }
+.bankkarten { display:grid; grid-template-columns:repeat(auto-fill, 272px); gap:16px; }
+.bankkarte { display:flex; flex-direction:column; justify-content:space-between; height:164px; padding:16px; border-radius:12px; background:linear-gradient(150deg, #33373d, #23262b); color:#f2f2f2; box-shadow:inset 0 1px 0 rgb(255 255 255 / .12); }
+.bankkarte:hover { text-decoration:none; }
+.bankkarte small { display:block; font-size:12px; color:#b9bcc2; }
+.bankkarte strong { font-size:16px; }
+.chipfeld { width:36px; height:28px; border-radius:6px; background:linear-gradient(#d8d3c4, #b9b3a2); box-shadow:inset 0 0 0 1px rgb(0 0 0 / .2), inset 12px 0 0 -11px rgb(0 0 0 / .35), inset -12px 0 0 -11px rgb(0 0 0 / .35); }
+.rechtsbuendig { text-align:right; }
+.zahlenband { display:grid; grid-template-columns:repeat(4, 1fr); border-top:1px solid var(--linie); border-bottom:1px solid var(--linie); }
+.zahlenband div { padding:16px 20px; }
+.zahlenband div + div { border-left:1px solid var(--linie); }
+.zahlenband dt { color:var(--leise); font-size:13px; font-weight:400; }
+.zahlenband dd { font-size:28px; line-height:1.2; font-weight:500; }
+.belegkopf { padding:12px 24px; min-height:64px; }
+.belegkopf h1 { font-size:16px; }
+.belegsumme { margin-left:auto; font-size:20px; }
+.belegraster { grid-template-columns:minmax(0, 1fr) 432px; }
+.mitte { position:relative; }
+.blatt { padding:0 32px 32px; }
+.stempelfeld { position:absolute; z-index:2; right:56px; bottom:56px; display:flex; flex-direction:column; align-items:flex-end; gap:12px; pointer-events:none; }
+.stempel { display:grid; justify-items:center; min-width:168px; padding:8px 16px; border:2px solid var(--stempel); outline:1px solid var(--stempel); outline-offset:-6px; border-radius:4px; color:var(--stempel); transform:rotate(-3deg); mix-blend-mode:multiply; opacity:.82; }
+.stempel:nth-child(even) { transform:rotate(1.5deg) translateX(-12px); }
+.stempel strong { font-size:20px; line-height:24px; font-weight:600; }
+.stempel span { font-size:12px; }
+.rotstempel { color:var(--stempelrot); border-color:var(--stempelrot); outline-color:var(--stempelrot); }
+.ergebnis { width:100%; gap:8px; min-height:44px; padding:8px 20px; border-radius:0; border-bottom:1px solid var(--linie); font-size:14px; text-align:left; }
+.ergebnis span:first-of-type { flex:1; }
+.ergebnis.mittelgut { background:var(--warn-zart); color:var(--warn); }
+.spalte > .inhalt { padding:20px; }
+.reiterzeile { padding:0 12px; }
+.zweiteiler { display:grid; grid-template-columns:minmax(0, 1fr) 304px; min-height:100%; }
+.zweiteiler .seite { margin:0; width:100%; }
+.teilrechts { padding:32px 24px; gap:16px; background:var(--flaeche); }
+.formatkarte { grid-template-columns:20px 1fr; justify-items:start; align-items:center; gap:12px; padding:12px 16px; background:var(--flaeche); text-align:left; border-radius:8px; }
+.formatkarte .icon { width:18px; height:18px; color:var(--leise); }
+.historie { max-width:480px; }
+.summenkarte { border-radius:8px; }
+.neukachel { background:none; border-style:dashed; }
+@media (max-height:860px) { .oben { padding-top:8px; } #menue { padding-top:8px; } .gruppe { margin-bottom:12px; } }
+@media (max-width:1280px) { .belegraster { grid-template-columns:minmax(0, 1fr) 384px; } }
+@media (max-width:980px) {
+  .rahmen, .hauptreihe, .nebenreihe, .zweiteiler, .belegraster { grid-template-columns:minmax(0, 1fr); }
+  .zahlenband { grid-template-columns:1fr 1fr; }
+  .budgetzeile { grid-template-columns:1fr auto 32px; padding:8px 0; } .budgetzeile .fortschritt { grid-row:2; grid-column:1 / -1; } .budgetzeile > .betrag:nth-of-type(2) { display:none; }
+  .stempelfeld { right:32px; bottom:32px; }
+  .blatt { padding:0 16px 16px; }
+}
+@media (max-width:640px) { .seite { padding:16px 16px 64px; } h1 { font-size:24px; } .belegkopf { padding:12px 16px; } .belegsumme { margin-left:0; } .monate span:nth-child(even) { visibility:hidden; } .achse { padding-right:8px; } .diagramm { grid-template-columns:48px minmax(0, 1fr); } .saeulen, .monate { gap:4px; padding-left:0; padding-right:0; } }
+.erechnung { background:#fff; color:#171819; --leise:#5f6266; --linie:rgb(23 24 25 / .1); --feld:#f4f4f5; --flaeche:#fff; --text:#171819; }
+.erechnung .stempelfeld { position:static; margin-top:40px; }
+.mitte > .stempelfeld { position:static; order:1; flex-direction:row; flex-wrap:wrap; justify-content:flex-end; align-items:center; gap:16px; padding:12px 32px 16px; border-top:1px solid var(--linie); background:#fff; }
+.mitte > .stempelfeld .stempel { min-width:152px; padding:4px 16px; }
+.mitte > .stempelfeld .stempel strong { font-size:16px; line-height:20px; }
+.mitte > .stempelfeld .stempel:nth-child(even) { transform:rotate(1.5deg); }
+.mittig { text-align:center; padding-bottom:16px; }
+.logo { gap:8px; }
+.logo .icon { width:36px; height:36px; color:var(--akzent); margin-left:-8px; }
+.marke { display:flex; align-items:center; gap:4px; padding:16px 12px 8px; font-size:16px; font-weight:600; color:var(--text); }
+.seitenleiste .marke .icon { width:28px; height:28px; color:var(--akzent); }
+.seitenleiste .mandantknopf { padding-top:8px; }
+@media (max-height:860px) { .marke { padding:8px 12px 0; } }
+.anmeldung { display:grid; grid-template-columns:minmax(0, 1fr) minmax(0, 1fr); place-items:stretch; gap:0; min-height:100vh; padding:16px; background:var(--flaeche); }
+.anmeldeseite { display:flex; flex-direction:column; justify-content:space-between; padding:16px 24px; min-width:0; }
+.anmeldung form { width:min(400px, 100%); margin:auto; gap:20px; padding:32px 0; background:none; border:0; border-radius:0; box-shadow:none; }
+.anmeldung h1 { font-size:32px; line-height:1.2; margin-bottom:4px; }
+.anmeldung form input { min-height:52px; padding:8px 16px; border-radius:12px; font-size:16px; }
+.anmeldung form .knopf.haupt { min-height:52px; justify-content:center; border-radius:26px; font-size:16px; }
+.geheimfeld { position:relative; display:block; }
+.geheimfeld input { width:100%; padding-right:52px !important; }
+.auge { position:absolute; right:4px; top:4px; width:44px; height:44px; display:grid; place-items:center; border:0; border-radius:8px; background:none; color:var(--leise); }
+.auge[aria-pressed="true"] { color:var(--akzent); }
+.schaufenster { display:flex; flex-direction:column; justify-content:space-between; gap:24px; min-width:0; padding:32px 40px; border-radius:28px; background:#0b1120; color:#fff; overflow:hidden; }
+.schaufenster .logo .icon { color:#9dbdf2; }
+.szene { position:relative; display:grid; place-items:center; flex:1; min-height:420px; }
+.riesenbon { position:absolute; inset:0; display:grid; place-items:center; }
+.riesenbon .icon { width:min(560px, 100%); height:min(560px, 62vh); color:#1f4e9e; }
+.beispiele { position:relative; width:min(400px, 100%); display:grid; gap:12px; font-size:13px; }
+.beispielmarke { padding:2px 8px; border-radius:10px; background:#0b1120; font-size:12px; }
+.beispiele ul { display:grid; gap:12px; }
+.beispiele li { display:grid; grid-template-columns:36px 1fr auto; gap:12px; padding:12px 16px; border:1px solid rgb(255 255 255 / .12); border-radius:16px; background:rgb(11 17 32 / .88); }
+.beispiele li strong { display:block; font-size:14px; }
+.beispiele li span:not(.kachelbild) { color:#9dbdf2; }
+.beispiele li p, .beispiele time { color:#c3cad8; }
+.beispiele time { font-size:12px; }
+.kachelbild { width:36px; height:36px; display:grid; place-items:center; border-radius:10px; background:#2f66c4; color:#fff; }
+.schaufenster h2 { font-size:48px; line-height:1.1; }
+.schaufenster h2 em { font-style:normal; color:#9dbdf2; }
+.schaufenster > div:last-child p { max-width:420px; margin-top:8px; color:#aeb6c6; font-size:16px; }
+@media (max-width:980px) { .anmeldung { grid-template-columns:minmax(0, 1fr); } .schaufenster { display:none; } .anmeldeseite { padding:16px 8px; } }
+@media (max-height:760px) { .schaufenster { padding:24px 32px; gap:8px; } .schaufenster h2 { font-size:36px; } .szene { min-height:360px; } }
+.beispiele > .titelzeile strong, .beispielmarke { padding:4px 12px; border:1px solid rgb(255 255 255 / .12); border-radius:14px; background:#0b1120; font-size:12px; }

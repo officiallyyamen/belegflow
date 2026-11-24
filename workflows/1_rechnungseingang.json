@@ -1,0 +1,463 @@
+{
+  "id": "belegflowEingang1",
+  "name": "Belegflow 1: Rechnungseingang",
+  "active": false,
+  "nodes": [
+    {
+      "id": "b94d6031-3f3f-5af5-a6b3-7a2d553cbba0",
+      "name": "Postfach",
+      "type": "n8n-nodes-base.emailReadImap",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "mailbox": "INBOX",
+        "format": "resolved",
+        "options": {
+          "customEmailConfig": "[\"UNSEEN\"]"
+        }
+      },
+      "credentials": {
+        "imap": {
+          "id": "bfImap0000000001",
+          "name": "Rechnungspostfach"
+        }
+      }
+    },
+    {
+      "id": "e4020c2c-5a10-58e4-b042-5dd044ac246f",
+      "name": "Upload",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        200
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "belegflow-rechnung",
+        "authentication": "headerAuth",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "webhookId": "belegflow-rechnung",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "bfWebhook0000001",
+          "name": "Belegflow Upload"
+        }
+      }
+    },
+    {
+      "id": "7597210a-3436-5eb9-a9c3-414817d86615",
+      "name": "Einstellungen",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        100
+      ],
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": true,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "url",
+              "name": "url",
+              "type": "string",
+              "value": "http://localhost:8000"
+            },
+            {
+              "id": "mandant",
+              "name": "mandant",
+              "type": "string",
+              "value": "1"
+            },
+            {
+              "id": "absender",
+              "name": "absender",
+              "type": "string",
+              "value": "belegflow@firma.example"
+            },
+            {
+              "id": "buchhaltung",
+              "name": "buchhaltung",
+              "type": "string",
+              "value": "buchhaltung@firma.example"
+            }
+          ]
+        },
+        "options": {
+          "stripBinary": false
+        }
+      }
+    },
+    {
+      "id": "659870e7-cfdf-5d0e-9cce-91b16831cd1f",
+      "name": "Anhänge trennen",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        100
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const erlaubt = /\\.(pdf|png|jpe?g|xml)$/i;\nconst ergebnis = [];\nfor (const [nummer, item] of $input.all().entries()) {\n  const mail = item.json;\n  const kopf = {\n    kennung: String(mail.messageId ?? mail.headers?.['message-id'] ?? '').slice(0, 300),\n    absender: String(mail.from?.text ?? mail.from ?? '').slice(0, 300),\n    betreff: String(mail.subject ?? '').slice(0, 500),\n    inhalt: String(mail.text ?? mail.textPlain ?? '').slice(0, 20000),\n    url: mail.url, mandant: mail.mandant, absender_mail: mail.absender, buchhaltung: mail.buchhaltung,\n  };\n  const dateien = Object.values(item.binary ?? {}).filter((d) => erlaubt.test(d.fileName ?? ''));\n  for (const datei of dateien) {\n    ergebnis.push({ json: { ...kopf, dateiname: datei.fileName, hat_datei: true }, binary: { datei }, pairedItem: nummer });\n  }\n  if (!dateien.length) ergebnis.push({ json: { ...kopf, dateiname: '', hat_datei: false }, pairedItem: nummer });\n}\nreturn ergebnis;"
+      }
+    },
+    {
+      "id": "1896e49f-c5ef-572b-a59e-f2831778abf9",
+      "name": "Hat Anhang",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        660,
+        100
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "1",
+              "leftValue": "={{ $json.hat_datei }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "a49cc79c-4917-54f9-9e31-508e0e921207",
+      "name": "Beleg einreichen",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        880,
+        0
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Einstellungen').first().json.url }}/api/m/{{ $('Einstellungen').first().json.mandant }}/schnittstelle/belege",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formData",
+              "name": "kennung",
+              "value": "={{ $json.kennung }}"
+            },
+            {
+              "parameterType": "formData",
+              "name": "absender",
+              "value": "={{ $json.absender }}"
+            },
+            {
+              "parameterType": "formData",
+              "name": "betreff",
+              "value": "={{ $json.betreff }}"
+            },
+            {
+              "parameterType": "formData",
+              "name": "inhalt",
+              "value": "={{ $json.inhalt }}"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "datei",
+              "inputDataFieldName": "datei"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "bfEingang0000001",
+          "name": "Belegflow Eingang"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "id": "ae495482-f1e0-5195-8042-5ae68e0d8309",
+      "name": "Nachricht ablegen",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        880,
+        240
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Einstellungen').first().json.url }}/api/m/{{ $('Einstellungen').first().json.mandant }}/schnittstelle/belege",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formData",
+              "name": "kennung",
+              "value": "={{ $json.kennung }}"
+            },
+            {
+              "parameterType": "formData",
+              "name": "absender",
+              "value": "={{ $json.absender }}"
+            },
+            {
+              "parameterType": "formData",
+              "name": "betreff",
+              "value": "={{ $json.betreff }}"
+            },
+            {
+              "parameterType": "formData",
+              "name": "inhalt",
+              "value": "={{ $json.inhalt }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "bfEingang0000001",
+          "name": "Belegflow Eingang"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "id": "e6b65ea5-3959-52ef-90ff-edf03c4daffb",
+      "name": "Braucht jemanden",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1120,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "1",
+              "leftValue": "={{ $json.status !== 'erfasst' || ['fehler', 'sperre'].includes($json.stufe) }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "f8f2d32b-c4d9-5b4b-9975-1169cbbdec06",
+      "name": "Buchhaltung informieren",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1340,
+        -60
+      ],
+      "parameters": {
+        "fromEmail": "={{ $('Einstellungen').first().json.absender }}",
+        "toEmail": "={{ $('Einstellungen').first().json.buchhaltung }}",
+        "subject": "Belegflow: Rechnung prüfen",
+        "emailFormat": "text",
+        "text": "={{ $json.hinweis || ($json.probleme ?? []).join('\\n') || $json.status }}\n\n{{ $json.beleg_id ? $('Einstellungen').first().json.url + '/#/' + $('Einstellungen').first().json.mandant + '/beleg/' + $json.beleg_id : 'Es wurde kein Beleg angelegt.' }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "credentials": {
+        "smtp": {
+          "id": "bfSmtp0000000001",
+          "name": "Belegflow SMTP"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "id": "cd28a891-ffaf-567a-adf5-74bfae9a531a",
+      "name": "Störung melden",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1120,
+        400
+      ],
+      "parameters": {
+        "fromEmail": "={{ $('Einstellungen').first().json.absender }}",
+        "toEmail": "={{ $('Einstellungen').first().json.buchhaltung }}",
+        "subject": "Belegflow: Rechnung kam nicht an",
+        "emailFormat": "text",
+        "text": "=Eine Nachricht konnte nicht übergeben werden. Sie bleibt im Postfach, bitte von Hand hochladen.\n\nGrund: {{ $json.error?.message ?? $json.error ?? 'unbekannt' }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "credentials": {
+        "smtp": {
+          "id": "bfSmtp0000000001",
+          "name": "Belegflow SMTP"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    }
+  ],
+  "connections": {
+    "Postfach": {
+      "main": [
+        [
+          {
+            "node": "Einstellungen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload": {
+      "main": [
+        [
+          {
+            "node": "Einstellungen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Einstellungen": {
+      "main": [
+        [
+          {
+            "node": "Anhänge trennen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anhänge trennen": {
+      "main": [
+        [
+          {
+            "node": "Hat Anhang",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hat Anhang": {
+      "main": [
+        [
+          {
+            "node": "Beleg einreichen",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Nachricht ablegen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Beleg einreichen": {
+      "main": [
+        [
+          {
+            "node": "Braucht jemanden",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Störung melden",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Nachricht ablegen": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Störung melden",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Braucht jemanden": {
+      "main": [
+        [
+          {
+            "node": "Buchhaltung informieren",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/Vienna"
+  }
+}

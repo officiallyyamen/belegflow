@@ -1,0 +1,711 @@
+{
+ "quelle": "https://www.wko.at/entlohnung/auslandsreise-kostensaetze",
+ "abgerufen": "2026-11-24",
+ "inland": {
+  "tag": "30.00",
+  "nacht": "17.00",
+  "mahlzeit": "15.00",
+  "stunde_ab": 3
+ },
+ "kilometer": {
+  "pkw": "0.50",
+  "motorrad": "0.25",
+  "fahrrad": "0.25",
+  "mitfahrer": "0.15"
+ },
+ "kilometer_grenze": {
+  "pkw": 30000,
+  "motorrad": 30000,
+  "fahrrad": 3000
+ },
+ "ausland": {
+  "Albanien": {
+   "tag": "27.9",
+   "nacht": "20.9"
+  },
+  "Belarus": {
+   "tag": "36.8",
+   "nacht": "31"
+  },
+  "Belgien": {
+   "tag": "35.3",
+   "nacht": "22.7"
+  },
+  "Belgien: Brüssel": {
+   "tag": "41.4",
+   "nacht": "32"
+  },
+  "Bosnien und Herzegowina": {
+   "tag": "31",
+   "nacht": "23.3"
+  },
+  "Bulgarien": {
+   "tag": "31",
+   "nacht": "22.7"
+  },
+  "Dänemark": {
+   "tag": "41.4",
+   "nacht": "41.4"
+  },
+  "Deutschland": {
+   "tag": "35.3",
+   "nacht": "27.9"
+  },
+  "Deutschland: Grenzort": {
+   "tag": "30.7",
+   "nacht": "18.1"
+  },
+  "Estland": {
+   "tag": "36.8",
+   "nacht": "31"
+  },
+  "Finnland": {
+   "tag": "41.4",
+   "nacht": "41.4"
+  },
+  "Frankreich": {
+   "tag": "32.7",
+   "nacht": "24"
+  },
+  "Frankreich: Paris/Straßburg": {
+   "tag": "35.8",
+   "nacht": "32.7"
+  },
+  "Griechenland": {
+   "tag": "28.6",
+   "nacht": "23.3"
+  },
+  "Großbritannien und Nordirland": {
+   "tag": "36.8",
+   "nacht": "36.4"
+  },
+  "Großbritannien: London": {
+   "tag": "41.4",
+   "nacht": "41.4"
+  },
+  "Irland": {
+   "tag": "36.8",
+   "nacht": "33.1"
+  },
+  "Island": {
+   "tag": "37.9",
+   "nacht": "31.4"
+  },
+  "Italien": {
+   "tag": "35.8",
+   "nacht": "27.9"
+  },
+  "Italien: Rom/Mailand": {
+   "tag": "40.6",
+   "nacht": "36.4"
+  },
+  "Italien: Grenzorte": {
+   "tag": "30.7",
+   "nacht": "18.1"
+  },
+  "Kroatien": {
+   "tag": "31",
+   "nacht": "23.3"
+  },
+  "Lettland": {
+   "tag": "36.8",
+   "nacht": "31"
+  },
+  "Liechtenstein": {
+   "tag": "30.7",
+   "nacht": "18.1"
+  },
+  "Litauen": {
+   "tag": "36.8",
+   "nacht": "31"
+  },
+  "Luxemburg": {
+   "tag": "35.3",
+   "nacht": "22.7"
+  },
+  "Malta": {
+   "tag": "30.1",
+   "nacht": "30.1"
+  },
+  "Moldau": {
+   "tag": "36.8",
+   "nacht": "31"
+  },
+  "Niederlande": {
+   "tag": "35.3",
+   "nacht": "27.9"
+  },
+  "Norwegen": {
+   "tag": "42.9",
+   "nacht": "41.4"
+  },
+  "Polen": {
+   "tag": "32.7",
+   "nacht": "25.1"
+  },
+  "Portugal": {
+   "tag": "27.9",
+   "nacht": "22.7"
+  },
+  "Rumänien": {
+   "tag": "36.8",
+   "nacht": "27.3"
+  },
+  "Russische Föderation": {
+   "tag": "36.8",
+   "nacht": "31"
+  },
+  "Russ. Föderation: Moskau": {
+   "tag": "40.6",
+   "nacht": "31"
+  },
+  "Schweden": {
+   "tag": "42.9",
+   "nacht": "41.4"
+  },
+  "Schweiz": {
+   "tag": "36.8",
+   "nacht": "32.7"
+  },
+  "Schweiz: Grenzorte": {
+   "tag": "30.7",
+   "nacht": "18.1"
+  },
+  "Slowakei": {
+   "tag": "27.9",
+   "nacht": "15.9"
+  },
+  "Slowakei: Bratislava": {
+   "tag": "31",
+   "nacht": "24.4"
+  },
+  "Slowenien": {
+   "tag": "31",
+   "nacht": "23.3"
+  },
+  "Slowenien: Grenzorte": {
+   "tag": "27.9",
+   "nacht": "15.9"
+  },
+  "Spanien": {
+   "tag": "34.2",
+   "nacht": "30.5"
+  },
+  "Tschechien": {
+   "tag": "31",
+   "nacht": "24.4"
+  },
+  "Tschechien: Grenzorte": {
+   "tag": "27.9",
+   "nacht": "15.9"
+  },
+  "Türkei": {
+   "tag": "31",
+   "nacht": "36.4"
+  },
+  "Ukraine": {
+   "tag": "36.8",
+   "nacht": "31"
+  },
+  "Ungarn": {
+   "tag": "26.6",
+   "nacht": "26.6"
+  },
+  "Ungarn: Budapest": {
+   "tag": "31",
+   "nacht": "26.6"
+  },
+  "Ungarn: Grenzorte": {
+   "tag": "26.6",
+   "nacht": "18.1"
+  },
+  "Zypern": {
+   "tag": "28.6",
+   "nacht": "30.5"
+  },
+  "Ägypten": {
+   "tag": "37.9",
+   "nacht": "41.4"
+  },
+  "Algerien": {
+   "tag": "41.4",
+   "nacht": "27"
+  },
+  "Angola": {
+   "tag": "43.6",
+   "nacht": "41.4"
+  },
+  "Äthiopien": {
+   "tag": "37.9",
+   "nacht": "41.4"
+  },
+  "Benin": {
+   "tag": "36.2",
+   "nacht": "26.6"
+  },
+  "Burkina Faso": {
+   "tag": "39.2",
+   "nacht": "21.1"
+  },
+  "Burundi": {
+   "tag": "37.9",
+   "nacht": "37.9"
+  },
+  "Côte d'Ivoire": {
+   "tag": "39.2",
+   "nacht": "32"
+  },
+  "Demokratische Rep. Kongo": {
+   "tag": "47.3",
+   "nacht": "33.1"
+  },
+  "Dschibuti": {
+   "tag": "45.8",
+   "nacht": "47.3"
+  },
+  "Gabun": {
+   "tag": "45.8",
+   "nacht": "39.9"
+  },
+  "Gambia": {
+   "tag": "43.6",
+   "nacht": "30.1"
+  },
+  "Ghana": {
+   "tag": "43.6",
+   "nacht": "30.1"
+  },
+  "Guinea": {
+   "tag": "43.6",
+   "nacht": "30.1"
+  },
+  "Kamerun": {
+   "tag": "45.8",
+   "nacht": "25.3"
+  },
+  "Kap Verde": {
+   "tag": "27.9",
+   "nacht": "19.6"
+  },
+  "Kenia": {
+   "tag": "34.9",
+   "nacht": "32"
+  },
+  "Liberia": {
+   "tag": "39.2",
+   "nacht": "41.4"
+  },
+  "Libyen": {
+   "tag": "43.6",
+   "nacht": "36.4"
+  },
+  "Madagaskar": {
+   "tag": "36.4",
+   "nacht": "36.4"
+  },
+  "Malawi": {
+   "tag": "32.7",
+   "nacht": "32.7"
+  },
+  "Mali": {
+   "tag": "39.2",
+   "nacht": "31.2"
+  },
+  "Marokko": {
+   "tag": "32.7",
+   "nacht": "21.8"
+  },
+  "Mauretanien": {
+   "tag": "33.8",
+   "nacht": "31.2"
+  },
+  "Mauritius": {
+   "tag": "36.4",
+   "nacht": "36.4"
+  },
+  "Mosambik": {
+   "tag": "43.6",
+   "nacht": "41.4"
+  },
+  "Namibia": {
+   "tag": "34.9",
+   "nacht": "34"
+  },
+  "Niger": {
+   "tag": "39.2",
+   "nacht": "21.1"
+  },
+  "Nigeria": {
+   "tag": "39.2",
+   "nacht": "34.2"
+  },
+  "Republik Kongo": {
+   "tag": "39.2",
+   "nacht": "26.8"
+  },
+  "Ruanda": {
+   "tag": "37.9",
+   "nacht": "37.9"
+  },
+  "Sambia": {
+   "tag": "37.1",
+   "nacht": "34"
+  },
+  "Senegal": {
+   "tag": "49.3",
+   "nacht": "31.2"
+  },
+  "Seychellen": {
+   "tag": "36.4",
+   "nacht": "36.4"
+  },
+  "Sierra Leone": {
+   "tag": "43.6",
+   "nacht": "34.2"
+  },
+  "Simbabwe": {
+   "tag": "37.1",
+   "nacht": "34"
+  },
+  "Somalia": {
+   "tag": "32.7",
+   "nacht": "29"
+  },
+  "Südafrika": {
+   "tag": "34.9",
+   "nacht": "34"
+  },
+  "Sudan": {
+   "tag": "43.6",
+   "nacht": "41.4"
+  },
+  "Tansania": {
+   "tag": "43.6",
+   "nacht": "32"
+  },
+  "Togo": {
+   "tag": "36.2",
+   "nacht": "26.6"
+  },
+  "Tschad": {
+   "tag": "36.2",
+   "nacht": "26.6"
+  },
+  "Tunesien": {
+   "tag": "36.2",
+   "nacht": "29.2"
+  },
+  "Uganda": {
+   "tag": "41.4",
+   "nacht": "32"
+  },
+  "Zentralafrik. Republik": {
+   "tag": "39.2",
+   "nacht": "29"
+  },
+  "Argentinien": {
+   "tag": "33.1",
+   "nacht": "47.3"
+  },
+  "Bahamas": {
+   "tag": "48",
+   "nacht": "30.5"
+  },
+  "Barbados": {
+   "tag": "51",
+   "nacht": "43.6"
+  },
+  "Bolivien": {
+   "tag": "26.6",
+   "nacht": "25.1"
+  },
+  "Brasilien": {
+   "tag": "33.1",
+   "nacht": "36.4"
+  },
+  "Chile": {
+   "tag": "37.5",
+   "nacht": "36.4"
+  },
+  "Costa Rica": {
+   "tag": "31.8",
+   "nacht": "31.8"
+  },
+  "Dominikanische Republik": {
+   "tag": "39.2",
+   "nacht": "43.6"
+  },
+  "Ecuador": {
+   "tag": "26.6",
+   "nacht": "21.6"
+  },
+  "El Salvador": {
+   "tag": "31.8",
+   "nacht": "26.2"
+  },
+  "Guatemala": {
+   "tag": "31.8",
+   "nacht": "31.8"
+  },
+  "Guyana": {
+   "tag": "39.2",
+   "nacht": "34.2"
+  },
+  "Haiti": {
+   "tag": "39.2",
+   "nacht": "27.7"
+  },
+  "Honduras": {
+   "tag": "31.8",
+   "nacht": "27"
+  },
+  "Jamaika": {
+   "tag": "47.1",
+   "nacht": "47.1"
+  },
+  "Kanada": {
+   "tag": "41",
+   "nacht": "34.2"
+  },
+  "Kolumbien": {
+   "tag": "33.1",
+   "nacht": "35.1"
+  },
+  "Kuba": {
+   "tag": "54.1",
+   "nacht": "27.7"
+  },
+  "Mexiko": {
+   "tag": "41",
+   "nacht": "36.4"
+  },
+  "Nicaragua": {
+   "tag": "31.8",
+   "nacht": "36.4"
+  },
+  "Niederländische Antillen": {
+   "tag": "43.6",
+   "nacht": "27.7"
+  },
+  "Panama": {
+   "tag": "43.6",
+   "nacht": "36.4"
+  },
+  "Paraguay": {
+   "tag": "33.1",
+   "nacht": "25.1"
+  },
+  "Peru": {
+   "tag": "33.1",
+   "nacht": "25.1"
+  },
+  "Suriname": {
+   "tag": "39.2",
+   "nacht": "25.1"
+  },
+  "Trinidad, Tobago": {
+   "tag": "51",
+   "nacht": "43.6"
+  },
+  "Uruguay": {
+   "tag": "33.1",
+   "nacht": "25.1"
+  },
+  "USA": {
+   "tag": "52.3",
+   "nacht": "42.9"
+  },
+  "USA: New York/Washington": {
+   "tag": "65.4",
+   "nacht": "51"
+  },
+  "Venezuela": {
+   "tag": "39.2",
+   "nacht": "35.1"
+  },
+  "Afghanistan": {
+   "tag": "31.8",
+   "nacht": "27.7"
+  },
+  "Armenien": {
+   "tag": "36.8",
+   "nacht": "31"
+  },
+  "Aserbaidschan": {
+   "tag": "36.8",
+   "nacht": "31"
+  },
+  "Bahrein": {
+   "tag": "54.1",
+   "nacht": "37.5"
+  },
+  "Bangladesch": {
+   "tag": "31.8",
+   "nacht": "34.2"
+  },
+  "Brunei": {
+   "tag": "33.1",
+   "nacht": "42.1"
+  },
+  "China": {
+   "tag": "35.1",
+   "nacht": "30.5"
+  },
+  "Georgien": {
+   "tag": "36.8",
+   "nacht": "31"
+  },
+  "Hongkong": {
+   "tag": "46.4",
+   "nacht": "37.9"
+  },
+  "Indien": {
+   "tag": "31.8",
+   "nacht": "39.9"
+  },
+  "Indonesien": {
+   "tag": "39.2",
+   "nacht": "32"
+  },
+  "Irak": {
+   "tag": "54.1",
+   "nacht": "36.4"
+  },
+  "Iran": {
+   "tag": "37.1",
+   "nacht": "29"
+  },
+  "Israel": {
+   "tag": "37.1",
+   "nacht": "32.5"
+  },
+  "Japan": {
+   "tag": "65.6",
+   "nacht": "42.9"
+  },
+  "Jemen": {
+   "tag": "54.1",
+   "nacht": "37.5"
+  },
+  "Jordanien": {
+   "tag": "37.1",
+   "nacht": "32.5"
+  },
+  "Kambodscha": {
+   "tag": "31.4",
+   "nacht": "31.4"
+  },
+  "Kasachstan": {
+   "tag": "36.8",
+   "nacht": "31"
+  },
+  "Katar": {
+   "tag": "54.1",
+   "nacht": "37.5"
+  },
+  "Kirgisistan": {
+   "tag": "36.8",
+   "nacht": "31"
+  },
+  "Korea, Dem. Volksrepublik": {
+   "tag": "32.5",
+   "nacht": "32.5"
+  },
+  "Korea, Republik": {
+   "tag": "45.3",
+   "nacht": "32.5"
+  },
+  "Kuwait": {
+   "tag": "54.1",
+   "nacht": "37.5"
+  },
+  "Laos": {
+   "tag": "31.4",
+   "nacht": "31.4"
+  },
+  "Libanon": {
+   "tag": "31.8",
+   "nacht": "35.1"
+  },
+  "Malaysia": {
+   "tag": "43.6",
+   "nacht": "45.1"
+  },
+  "Mongolei": {
+   "tag": "29.4",
+   "nacht": "29.4"
+  },
+  "Myanmar": {
+   "tag": "29.4",
+   "nacht": "29.4"
+  },
+  "Nepal": {
+   "tag": "31.8",
+   "nacht": "34.2"
+  },
+  "Oman": {
+   "tag": "54.1",
+   "nacht": "37.5"
+  },
+  "Pakistan": {
+   "tag": "27.7",
+   "nacht": "25.1"
+  },
+  "Philippinen": {
+   "tag": "32.5",
+   "nacht": "32.5"
+  },
+  "Saudi-Arabien": {
+   "tag": "54.1",
+   "nacht": "37.5"
+  },
+  "Singapur": {
+   "tag": "43.6",
+   "nacht": "44.7"
+  },
+  "Sri Lanka": {
+   "tag": "31.8",
+   "nacht": "32.7"
+  },
+  "Syrien": {
+   "tag": "32.7",
+   "nacht": "29"
+  },
+  "Tadschikistan": {
+   "tag": "36.8",
+   "nacht": "31"
+  },
+  "Taiwan": {
+   "tag": "39.2",
+   "nacht": "37.5"
+  },
+  "Thailand": {
+   "tag": "39.2",
+   "nacht": "42.1"
+  },
+  "Turkmenistan": {
+   "tag": "36.8",
+   "nacht": "31"
+  },
+  "Usbekistan": {
+   "tag": "36.8",
+   "nacht": "31"
+  },
+  "Ver. Arabische Emirate": {
+   "tag": "54.1",
+   "nacht": "37.5"
+  },
+  "Vietnam": {
+   "tag": "31.4",
+   "nacht": "31.4"
+  },
+  "Australien": {
+   "tag": "47.3",
+   "nacht": "39.9"
+  },
+  "Neuseeland": {
+   "tag": "32.5",
+   "nacht": "36.4"
+  }
+ }
+}

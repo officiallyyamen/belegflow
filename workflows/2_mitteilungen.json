@@ -1,0 +1,307 @@
+{
+  "id": "belegflowMitteil2",
+  "name": "Belegflow 2: Mitteilungen zustellen",
+  "active": false,
+  "nodes": [
+    {
+      "id": "5f2d451a-ef98-53b5-898c-ed72c1e49ec7",
+      "name": "Jetzt ausführen",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        180
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "67db4657-7549-580d-9022-233586902984",
+      "name": "Alle 5 Minuten",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 5
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "7597210a-3436-5eb9-a9c3-414817d86615",
+      "name": "Einstellungen",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": true,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "url",
+              "name": "url",
+              "type": "string",
+              "value": "http://localhost:8000"
+            },
+            {
+              "id": "mandant",
+              "name": "mandant",
+              "type": "string",
+              "value": "1"
+            },
+            {
+              "id": "absender",
+              "name": "absender",
+              "type": "string",
+              "value": "belegflow@firma.example"
+            },
+            {
+              "id": "buchhaltung",
+              "name": "buchhaltung",
+              "type": "string",
+              "value": "buchhaltung@firma.example"
+            }
+          ]
+        },
+        "options": {
+          "stripBinary": false
+        }
+      }
+    },
+    {
+      "id": "db7d2559-f2ed-573e-9774-1fa7b0ca5892",
+      "name": "Mitteilungen holen",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        440,
+        0
+      ],
+      "parameters": {
+        "url": "={{ $('Einstellungen').first().json.url }}/api/m/{{ $('Einstellungen').first().json.mandant }}/schnittstelle/mitteilungen",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "bfSchnittst00001",
+          "name": "Belegflow Schnittstelle"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "id": "990030d0-d7e2-529a-a3dd-b67cbcfbfc47",
+      "name": "Gibt es etwas",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        640,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "1",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "422ee06d-1575-52fa-b443-eea8bf2d57db",
+      "name": "Person benachrichtigen",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        860,
+        0
+      ],
+      "parameters": {
+        "fromEmail": "={{ $('Einstellungen').first().json.absender }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "=Belegflow: {{ $json.text.replace(/[\\r\\n]+/g, ' ').slice(0, 120) }}",
+        "emailFormat": "text",
+        "text": "=Hallo {{ $json.name }},\n\n{{ $json.text }}\n\n{{ $('Einstellungen').first().json.url }}/#/{{ $('Einstellungen').first().json.mandant }}/{{ $json.ziel ?? 'uebersicht' }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "credentials": {
+        "smtp": {
+          "id": "bfSmtp0000000001",
+          "name": "Belegflow SMTP"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "id": "c6c4052c-920e-53b0-af4e-bbfa5668d1bf",
+      "name": "Zugestellte sammeln",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1100,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const nummern = $input.all().map((_, i) => $('Gibt es etwas').itemMatching(i).json.id);\nreturn [{ json: { nummern } }];"
+      }
+    },
+    {
+      "id": "5872727c-6e75-576c-9197-36e5c07b6fb3",
+      "name": "Als zugestellt merken",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1320,
+        0
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Einstellungen').first().json.url }}/api/m/{{ $('Einstellungen').first().json.mandant }}/schnittstelle/mitteilungen/zugestellt",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ nummern: $json.nummern }) }}",
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "bfSchnittst00001",
+          "name": "Belegflow Schnittstelle"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    }
+  ],
+  "connections": {
+    "Alle 5 Minuten": {
+      "main": [
+        [
+          {
+            "node": "Einstellungen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Jetzt ausführen": {
+      "main": [
+        [
+          {
+            "node": "Einstellungen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Einstellungen": {
+      "main": [
+        [
+          {
+            "node": "Mitteilungen holen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mitteilungen holen": {
+      "main": [
+        [
+          {
+            "node": "Gibt es etwas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gibt es etwas": {
+      "main": [
+        [
+          {
+            "node": "Person benachrichtigen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Person benachrichtigen": {
+      "main": [
+        [
+          {
+            "node": "Zugestellte sammeln",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Zugestellte sammeln": {
+      "main": [
+        [
+          {
+            "node": "Als zugestellt merken",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/Vienna"
+  }
+}

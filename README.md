@@ -1,89 +1,110 @@
-# Belegflow
+<p><picture><source media="(prefers-color-scheme: dark)" srcset="docs/logo/logo-quer-dunkel.svg"><img src="docs/logo/logo-quer-blau.svg" alt="Belegflow" height="72"></picture></p>
 
-Automatische Erfassung von Eingangsrechnungen: Belege kommen per E-Mail über n8n, werden ausgelesen, geprüft, von Menschen freigegeben und für die Buchhaltung exportiert.
+Belegflow bringt Eingangsrechnungen vom Postfach bis zur Zahlung: auslesen, prüfen, freigeben, bezahlen, exportieren. Für österreichische Buchhaltungen mit einer oder mehreren Firmen.
+
+**Demo:** https://belegflow-demo.vercel.app (Zugang auf Anfrage, alle Firmen und Beträge sind erfunden)
 
 ![Übersicht](docs/uebersicht.png)
-
-![Beleg prüfen und freigeben](docs/beleg.png)
 
 ## Ablauf
 
 ```mermaid
 flowchart LR
-    A[Postfach] --> B[n8n]
-    B --> C[Belegflow API]
-    C --> D[Auslesen]
-    D --> E[Prüfen]
-    E -->|Fehler| F[Korrektur durch Buchhaltung]
-    E -->|in Ordnung| G[Freigabe durch zweite Person]
-    F --> G
-    G --> H[CSV-Export]
+    A[E-Mail] --> B[n8n]
+    U[Upload] --> C
+    B --> C[Auslesen]
+    C --> D[Prüfen]
+    D -->|Fehler| E[Buchhaltung klärt]
+    E --> F
+    D -->|in Ordnung| F[Freigabe nach Workflow]
+    F --> G[SEPA-Datei]
+    F --> H[Export CSV oder BMD]
 ```
 
 ## Was es kann
 
-- **Auslesen:** regelbasiert auf dem eigenen Server oder mit Claude für beliebige Layouts, Scans und Fotos
-- **Prüfen:** Pflichtangaben, Summen, Steuersätze, UID-Prüfziffer, IBAN-Prüfziffer, Termine, doppelte Rechnungen
-- **Betrugsschutz:** eine geänderte IBAN blockiert die Freigabe, bis jemand sie mit Begründung bestätigt
-- **Vier-Augen-Prinzip:** wer einen Beleg korrigiert, kann ihn nicht selbst freigeben
-- **Nachvollziehbarkeit:** jede Aktion steht in einem verketteten Protokoll, Änderungen an Einträgen fallen auf
-- **Kontierung:** Konto und Kostenstelle kommen aus Regeln oder vom letzten Beleg des Lieferanten
-- **Zusammenarbeit:** Kommentare und Verlauf direkt am Beleg
-- **Auswertung:** Anteil der automatisch richtig gelesenen Belege, offene Fehler, Belege pro Monat
+- **Auslesen:** PDF nach Regeln auf dem eigenen Server, E-Rechnungen (XRechnung, ZUGFeRD, ebInterface) direkt aus den Daten, Scans und Fotos wahlweise mit einem Sprachmodell
+- **Prüfen:** bis zu 18 Punkte je Rechnung, darunter Pflichtangaben, Summen, Steuersätze, UID, IBAN, Fristen und Duplikate
+- **Betrugsschutz:** eine geänderte IBAN sperrt die Rechnung, bis jemand sie mit Begründung bestätigt
+- **Freigeben:** Workflows nach Betrag und Kostenstelle, Teams, Vertretung bei Abwesenheit, Vier-Augen-Prinzip
+- **Bezahlen:** SEPA-Datei für das Onlinebanking, Skonto, keine Doppelzahlung
+- **Exportieren:** CSV, BMD-Format, ZIP mit Belegen, Rückstellungen zum Monatsende
+- **Dazu:** Verträge mit Fristen, Erstattungen mit Taggeld und Kilometergeld, Bestellanforderungen mit Wareneingang, Firmenkarten, Budgets
+- **Mandanten:** mehrere Firmen getrennt, Rechte je Firma
+- **Nachvollziehbar:** jede Aktion steht in einem verketteten Protokoll, nachträgliche Änderungen fallen auf
 
-Die KI entscheidet nichts. Sie liest nur Werte aus, die danach durch feste Regeln und eine Person geprüft werden.
+Ein Sprachmodell liest nur Werte aus. Entscheidungen treffen feste Regeln und Menschen.
+
+| Prüfung | Freigabe |
+|---|---|
+| ![Prüfung](docs/pruefung.png) | ![Freigaben](docs/freigaben.png) |
 
 ## Starten
 
 ```bash
 cp .env.example .env
 docker compose up --build
+docker compose exec api python -m app.verwaltung demo
 ```
 
-Die Oberfläche läuft auf http://localhost:8000, die API-Dokumentation auf http://localhost:8000/docs. Vor dem Start in `.env` eigene Tokens und ein Datenbank-Passwort setzen.
+In `.env` vorher ein eigenes Datenbank-Passwort setzen. Der letzte Befehl legt erfundene Firmen und Belege an und zeigt die Zugänge. Die Oberfläche läuft auf http://localhost:8000, die Beschreibung der API auf http://localhost:8000/docs.
 
 Ohne Docker:
 
 ```bash
 python -m venv .venv
 .venv/bin/pip install -r requirements.txt
-.venv/bin/uvicorn app.main:app
+.venv/bin/python -m app.verwaltung demo
+BELEGFLOW_SICHERE_COOKIES=false .venv/bin/uvicorn app.main:app
 ```
 
-Unter Windows heißt der Ordner `.venv\Scripts` statt `.venv/bin`.
+Unter Windows heißt der Ordner `.venv\Scripts`, und die Variable wird vorher mit `$env:BELEGFLOW_SICHERE_COOKIES = "false"` gesetzt.
 
-Demo-Rechnungen mit erfundenen Firmen erzeugen:
-
-```bash
-pip install -r requirements-dev.txt
-python -m demo.erzeuge_belege
-```
-
-## Auslesen mit Claude
-
-In `.env` `BELEGFLOW_EXTRAKTOR=claude` und `ANTHROPIC_API_KEY` setzen. Der Aufruf ist kostenpflichtig, das Modell ist über `BELEGFLOW_CLAUDE_MODELL` wählbar. Die Belege werden dabei an die API von Anthropic übertragen. Das braucht vor dem Einsatz mit echten Daten eine Prüfung nach DSGVO und einen Auftragsverarbeitungsvertrag.
+Für den echten Betrieb legt `python -m app.verwaltung admin` die erste Person und die erste Firma an.
 
 ## n8n
 
-`workflows/belegflow.json` importieren, beim Knoten „Postfach“ die IMAP-Zugangsdaten hinterlegen und für n8n diese Variablen setzen:
+| Workflow | Auslöser | Was er tut |
+|---|---|---|
+| [Rechnungseingang](workflows/1_rechnungseingang.json) | neue E-Mail oder Upload | trennt Anhänge, reicht jeden Beleg ein, meldet Fehler, Duplikate und Störungen |
+| [Mitteilungen](workflows/2_mitteilungen.json) | alle 5 Minuten | schickt Mitteilungen per E-Mail und merkt nur die zugestellten als erledigt |
+| [Erinnerungen](workflows/3_erinnerungen.json) | werktags um 8 Uhr | schickt jeder Person ihre offenen Freigaben, Vertragsfristen und fehlenden Belege |
 
-| Variable | Bedeutung |
-|---|---|
-| `BELEGFLOW_URL` | Adresse der API |
-| `BELEGFLOW_TOKEN` | Token eines Benutzers mit Rolle `eingang` |
-| `N8N_BLOCK_ENV_ACCESS_IN_NODE` | `false`, damit der Workflow die Variablen lesen darf |
+![Rechnungseingang](docs/n8n_1_rechnungseingang.svg)
 
-Der Knoten „Upload“ ist ein Webhook zum Ausprobieren ohne Postfach. Vor einem öffentlichen Betrieb muss er entfernt oder abgesichert werden.
+![Mitteilungen](docs/n8n_2_mitteilungen.svg)
+
+![Erinnerungen](docs/n8n_3_erinnerungen.svg)
+
+Nach dem Import im Knoten „Einstellungen“ Adresse, Mandant, Absender und Postfach der Buchhaltung eintragen. Dazu diese Zugangsdaten in n8n anlegen:
+
+| Zugang | Art | Inhalt |
+|---|---|---|
+| Belegflow Eingang | Header Auth | `Authorization: Bearer …`, Zugang mit Rolle `eingang` |
+| Belegflow Schnittstelle | Header Auth | `Authorization: Bearer …`, Zugang mit Rolle `schnittstelle` |
+| Belegflow Upload | Header Auth | eigener Schlüssel für den Webhook |
+| Belegflow SMTP | SMTP | Postausgang |
+| Rechnungspostfach | IMAP | Posteingang der Rechnungen |
+
+Die Zugänge für Belegflow entstehen unter Einstellungen, Zugänge. Dieselbe Datei wird nur einmal erfasst, ein Workflow darf deshalb beliebig oft wiederholt werden.
 
 ## Rollen
 
 | Rolle | Darf |
 |---|---|
-| `eingang` | Belege einreichen |
-| `buchhaltung` | Belege einreichen, korrigieren, kontieren, exportieren |
+| `buchhaltung` | erfassen, prüfen, kontieren, Freigaben anfordern, zahlen, exportieren |
 | `freigabe` | freigeben, ablehnen, neue IBAN bestätigen |
+| `mitarbeit` | Erstattungen und Bestellanforderungen einreichen |
+| `einsicht` | alles sehen, nichts ändern |
+| `admin` | Personen, Workflows und Stammdaten verwalten |
 
-## Tests
+## Auslesen mit Sprachmodell
+
+In `.env` `BELEGFLOW_EXTRAKTOR=modell`, `BELEGFLOW_MODELL` und `ANTHROPIC_API_KEY` setzen. Aufrufe kosten Geld und übertragen die Belege an den Anbieter. Vor dem Einsatz mit echten Daten braucht das eine Prüfung nach DSGVO und einen Vertrag zur Auftragsverarbeitung.
+
+## Technik
+
+Python, FastAPI, SQLAlchemy, PostgreSQL oder SQLite, JavaScript ohne Framework, n8n, Docker.
 
 ```bash
 pip install -r requirements-dev.txt
@@ -95,11 +116,13 @@ Die CI führt die Tests mit SQLite und mit PostgreSQL aus.
 
 ## Grenzen
 
-- Der CSV-Export ist ein neutrales Format. Eine Anbindung an BMD NTCS ist nicht enthalten.
-- Die regelbasierte Auslesung versteht Textrechnungen mit üblichen deutschen Bezeichnungen, andere Layouts brauchen Claude.
+- Der BMD-Export folgt dem veröffentlichten Importformat, wurde aber nicht in einem echten BMD NTCS getestet.
+- Die Regeln lesen Textrechnungen mit üblichen deutschen Bezeichnungen. Andere Layouts und Scans brauchen das Sprachmodell.
+- Firmenkarten und Kontobewegungen sind nachgebildet, es gibt keine Bankanbindung.
+- Anmeldung mit E-Mail und Passwort, kein Single Sign-on.
+- Datenbank-Migrationen fehlen noch, neue Tabellen entstehen beim Start.
 - Die Prüfungen ersetzen keine steuerliche Beratung.
-- Es gibt keine Benutzerverwaltung mit Single Sign-on, Zugänge laufen über Tokens.
 
 ## Verwendete Bausteine
 
-Schrift Figtree (SIL Open Font License) und Icons von Phosphor (MIT) liegen im Projekt, die Oberfläche lädt nichts von fremden Servern.
+Schrift Figtree (SIL Open Font License) und Icons von Phosphor (MIT) liegen im Projekt. Die Oberfläche lädt nichts von fremden Servern.
