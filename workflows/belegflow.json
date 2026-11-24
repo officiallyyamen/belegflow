@@ -1,0 +1,120 @@
+{
+  "id": "belegflow0000001",
+  "name": "Belegflow Rechnungseingang",
+  "nodes": [
+    {
+      "id": "a1000000-0000-4000-8000-000000000001",
+      "name": "Postfach",
+      "type": "n8n-nodes-base.emailReadImap",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "parameters": { "mailbox": "INBOX", "format": "resolved", "options": { "customEmailConfig": "[\"UNSEEN\"]" } }
+    },
+    {
+      "id": "a1000000-0000-4000-8000-000000000002",
+      "name": "Upload",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 220],
+      "webhookId": "a1000000-0000-4000-8000-00000000000f",
+      "parameters": { "httpMethod": "POST", "path": "belegflow", "responseMode": "lastNode", "options": {} }
+    },
+    {
+      "id": "a1000000-0000-4000-8000-000000000003",
+      "name": "Anhaenge trennen",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [240, 110],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const erlaubt = ['application/pdf', 'image/png', 'image/jpeg'];\nconst ergebnis = [];\nfor (const [nummer, item] of $input.all().entries()) {\n  for (const datei of Object.values(item.binary ?? {})) {\n    if (erlaubt.includes(datei.mimeType)) {\n      ergebnis.push({ json: { dateiname: datei.fileName ?? 'beleg', absender: item.json.from?.text ?? 'Upload' }, binary: { beleg: datei }, pairedItem: nummer });\n    }\n  }\n}\nreturn ergebnis;"
+      }
+    },
+    {
+      "id": "a1000000-0000-4000-8000-000000000004",
+      "name": "Beleg erfassen",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [480, 110],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.BELEGFLOW_URL }}/belege",
+        "sendHeaders": true,
+        "headerParameters": { "parameters": [{ "name": "Authorization", "value": "=Bearer {{ $env.BELEGFLOW_TOKEN }}" }] },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": { "parameters": [{ "parameterType": "formBinaryData", "name": "datei", "inputDataFieldName": "beleg" }] },
+        "options": { "timeout": 120000, "response": { "response": { "fullResponse": true, "neverError": true } } }
+      }
+    },
+    {
+      "id": "a1000000-0000-4000-8000-000000000005",
+      "name": "Eingreifen noetig",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [720, 110],
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "loose" },
+          "combinator": "or",
+          "conditions": [
+            { "id": "c1", "leftValue": "={{ $json.statusCode }}", "rightValue": 201, "operator": { "type": "number", "operation": "notEquals" } },
+            { "id": "c2", "leftValue": "={{ $json.body.status }}", "rightValue": "pruefen", "operator": { "type": "string", "operation": "equals" } }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "a1000000-0000-4000-8000-000000000006",
+      "name": "Meldung bauen",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [960, 0],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            { "id": "m1", "name": "ergebnis", "type": "string", "value": "pruefen" },
+            { "id": "m2", "name": "beleg", "type": "string", "value": "={{ $json.body.id ?? $json.body.beleg_id ?? '' }}" },
+            { "id": "m3", "name": "text", "type": "string", "value": "={{ $json.statusCode === 201 ? $json.body.hinweise.filter(h => h.stufe === 'fehler').map(h => h.text).join(', ') : $json.body.detail }}" }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "a1000000-0000-4000-8000-000000000007",
+      "name": "Bereit",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [960, 220],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            { "id": "b1", "name": "ergebnis", "type": "string", "value": "bereit" },
+            { "id": "b2", "name": "beleg", "type": "string", "value": "={{ $json.body.id }}" },
+            { "id": "b3", "name": "text", "type": "string", "value": "={{ $json.body.lieferant }}: {{ $json.body.brutto }} EUR" }
+          ]
+        },
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "Postfach": { "main": [[{ "node": "Anhaenge trennen", "type": "main", "index": 0 }]] },
+    "Upload": { "main": [[{ "node": "Anhaenge trennen", "type": "main", "index": 0 }]] },
+    "Anhaenge trennen": { "main": [[{ "node": "Beleg erfassen", "type": "main", "index": 0 }]] },
+    "Beleg erfassen": { "main": [[{ "node": "Eingreifen noetig", "type": "main", "index": 0 }]] },
+    "Eingreifen noetig": {
+      "main": [
+        [{ "node": "Meldung bauen", "type": "main", "index": 0 }],
+        [{ "node": "Bereit", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "settings": { "executionOrder": "v1" },
+  "active": false
+}

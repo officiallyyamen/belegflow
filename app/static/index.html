@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Belegflow</title>
+<style>
+:root { --grund:#f3f5f4; --flaeche:#fff; --text:#17211d; --leise:#5c6b64; --linie:#d9e0dc; --akzent:#0b6b4f; --akzent-text:#fff; --gut:#0b6b4f; --warn:#8a5a00; --fehler:#b3261e; color-scheme:light; }
+@media (prefers-color-scheme:dark) { :root { --grund:#101614; --flaeche:#18211e; --text:#e8efeb; --leise:#9fb0a8; --linie:#2c3833; --akzent:#4cc79b; --akzent-text:#06251a; --gut:#4cc79b; --warn:#e5b04d; --fehler:#ff8a80; color-scheme:dark; } }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--grund); color:var(--text); font:15px/1.5 system-ui, sans-serif; }
+header { display:flex; flex-wrap:wrap; gap:12px; align-items:center; padding:14px 20px; background:var(--flaeche); border-bottom:1px solid var(--linie); }
+h1 { margin:0 auto 0 0; font-size:20px; }
+h2 { margin:0; font-size:17px; }
+main { display:grid; grid-template-columns:minmax(320px, 1fr) minmax(0, 1.4fr); gap:16px; padding:16px 20px; }
+section { background:var(--flaeche); border:1px solid var(--linie); border-radius:8px; padding:16px; min-width:0; }
+button, input, select { font:inherit; color:inherit; padding:8px 12px; border:1px solid var(--linie); border-radius:6px; background:var(--grund); }
+button { cursor:pointer; }
+button.haupt { background:var(--akzent); color:var(--akzent-text); border-color:transparent; }
+button:disabled { opacity:.5; cursor:not-allowed; }
+:focus-visible { outline:2px solid var(--akzent); outline-offset:2px; }
+table { width:100%; border-collapse:collapse; }
+td, th { text-align:left; padding:9px 6px; border-bottom:1px solid var(--linie); }
+td.zahl, th.zahl { text-align:right; font-variant-numeric:tabular-nums; }
+tr.wahl { cursor:pointer; }
+tr.aktiv { background:color-mix(in srgb, var(--akzent) 12%, transparent); }
+.reihe { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:12px; }
+.felder { display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin:14px 0; }
+.felder label { display:grid; gap:3px; font-size:13px; color:var(--leise); }
+.felder input { width:100%; color:var(--text); }
+.hinweise { list-style:none; margin:10px 0; padding:0; display:grid; gap:6px; }
+.fehler { color:var(--fehler); }
+.warnung { color:var(--warn); }
+.bereit, .freigegeben, .exportiert { color:var(--gut); }
+.pruefen, .abgelehnt { color:var(--fehler); }
+.leise { color:var(--leise); }
+iframe { width:100%; height:420px; border:1px solid var(--linie); border-radius:6px; background:#fff; }
+#meldung { min-height:22px; padding:0 20px; }
+.verlauf { font-size:13px; padding-left:18px; }
+@media (max-width:860px) { main { grid-template-columns:minmax(0, 1fr); padding:12px; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Belegflow</h1>
+  <span id="wer" class="leise"></span>
+  <form id="anmelden" class="reihe" style="margin:0"><input id="token" type="password" autocomplete="off" placeholder="Zugangstoken" aria-label="Zugangstoken"><button class="haupt">Anmelden</button></form>
+  <button id="abmelden" hidden>Abmelden</button>
+</header>
+<p id="meldung" role="status"></p>
+<main>
+  <section>
+    <div class="reihe">
+      <select id="filter" aria-label="Status"><option value="">Alle</option><option value="pruefen">Zu prüfen</option><option value="bereit">Bereit</option><option value="freigegeben">Freigegeben</option><option value="exportiert">Exportiert</option><option value="abgelehnt">Abgelehnt</option></select>
+      <label><input id="datei" type="file" accept=".pdf,.png,.jpg,.jpeg" aria-label="Beleg hochladen"></label>
+      <button id="export">Export CSV</button>
+    </div>
+    <div id="zahlen" class="leise"></div>
+    <div style="overflow-x:auto"><table><thead><tr><th>Nr.</th><th>Lieferant</th><th>Status</th><th class="zahl">Brutto</th></tr></thead><tbody id="liste"></tbody></table></div>
+  </section>
+  <section id="detail"><p class="leise">Wähle links einen Beleg aus.</p></section>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+const namen = { pruefen:"Zu prüfen", bereit:"Bereit", freigegeben:"Freigegeben", exportiert:"Exportiert", abgelehnt:"Abgelehnt" };
+const felder = { lieferant:"Lieferant", lieferant_uid:"UID", empfaenger:"Empfänger", rechnungsnummer:"Rechnungsnummer", rechnungsdatum:"Rechnungsdatum", faellig_am:"Fällig am", iban:"IBAN", netto:"Netto", ust:"USt", brutto:"Brutto", konto:"Konto", kostenstelle:"Kostenstelle" };
+let token = sessionStorage.getItem("belegflow") || "", ich = null, gewaehlt = null, dateiUrl = null;
+
+function el(art, eigenschaften = {}, ...kinder) {
+  const knoten = Object.assign(document.createElement(art), eigenschaften);
+  knoten.append(...kinder);
+  return knoten;
+}
+function melde(text, fehler = false) { $("meldung").textContent = text; $("meldung").className = fehler ? "fehler" : "leise"; }
+async function api(pfad, methode = "GET", inhalt = null) {
+  const optionen = { method:methode, headers:{ Authorization:"Bearer " + token } };
+  if (inhalt instanceof FormData) optionen.body = inhalt;
+  else if (inhalt) { optionen.body = JSON.stringify(inhalt); optionen.headers["Content-Type"] = "application/json"; }
+  const antwort = await fetch(pfad, optionen);
+  if (!antwort.ok) {
+    const daten = await antwort.json().catch(() => ({}));
+    throw new Error(typeof daten.detail === "string" ? daten.detail : "Eingabe ist ungültig");
+  }
+  return antwort;
+}
+const holen = async pfad => (await api(pfad)).json();
+async function versuche(aufgabe) { try { await aufgabe(); } catch (fehler) { melde(fehler.message, true); } }
+const darf = rolle => ich && ich.rollen.includes(rolle);
+const geld = ["netto", "ust", "brutto"];
+const zeilenText = b => b.steuerzeilen.map(z => [z.satz, z.netto, z.ust].join(" / ")).join("; ");
+const zeilenLesen = t => (t || "").split(";").filter(x => x.trim()).map(x => {
+  const [satz, netto, ust] = x.split("/").map(y => (y || "").trim().replace(",", "."));
+  return { satz:satz ?? "", netto:netto ?? "", ust:ust ?? "" };
+});
+const betrag = wert => wert === null ? "" : Number(wert).toLocaleString("de-AT", { style:"currency", currency:"EUR" });
+
+async function ladeListe() {
+  const filter = $("filter").value;
+  const belege = await holen("/belege?grenze=200" + (filter ? "&status=" + filter : ""));
+  $("liste").replaceChildren(...belege.map(b => {
+    const zeile = el("tr", { className:"wahl" + (b.id === gewaehlt ? " aktiv" : ""), tabIndex:0 },
+      el("td", { textContent:b.id }), el("td", { textContent:b.lieferant || b.dateiname }),
+      el("td", { textContent:namen[b.status], className:b.status }), el("td", { textContent:betrag(b.brutto), className:"zahl" }));
+    zeile.onclick = () => versuche(() => zeige(b.id));
+    zeile.onkeydown = e => { if (e.key === "Enter") zeile.onclick(); };
+    return zeile;
+  }));
+  const k = await holen("/kennzahlen");
+  $("zahlen").textContent = `${k.gesamt} Belege, ${k.manuell_bearbeitet} manuell bearbeitet`;
+}
+
+async function zeige(id) {
+  gewaehlt = id;
+  const [beleg, verlauf] = await Promise.all([holen("/belege/" + id), holen(`/belege/${id}/protokoll`)]);
+  const datei = await (await api(`/belege/${id}/datei`)).blob();
+  if (dateiUrl) URL.revokeObjectURL(dateiUrl);
+  dateiUrl = URL.createObjectURL(datei);
+  const offen = ["pruefen", "bereit"].includes(beleg.status);
+  const formular = el("form", { className:"felder" });
+  for (const [name, titel] of Object.entries(felder))
+    formular.append(el("label", {}, titel, el("input", { name, value:beleg[name] ?? "", type:name.endsWith("datum") || name === "faellig_am" ? "date" : "text", disabled:!offen || !darf("buchhaltung") })));
+  formular.append(el("label", {}, "Steuerzeilen (Satz / Netto / USt; …)", el("input", { name:"steuerzeilen", value:zeilenText(beleg), disabled:!offen || !darf("buchhaltung") })));
+  formular.onsubmit = e => e.preventDefault();
+  const knoepfe = el("div", { className:"reihe" });
+  const knopf = (text, aufgabe, klasse = "") => knoepfe.append(el("button", { type:"button", textContent:text, className:klasse, onclick:() => versuche(aufgabe) }));
+  const sende = async (pfad, methode, inhalt, text) => { try { await api(pfad, methode, inhalt); melde(text); } finally { await zeige(id); } };
+  if (offen && darf("buchhaltung")) knopf("Speichern", () => {
+    const neu = {};
+    for (const eingabe of formular.querySelectorAll("input")) {
+      const wert = eingabe.value.trim() || null;
+      if (eingabe.name === "steuerzeilen") { if (wert !== (zeilenText(beleg) || null)) neu.steuerzeilen = zeilenLesen(wert); }
+      else {
+        const sauber = geld.includes(eingabe.name) && wert ? wert.replace(/\./g, wert.includes(",") ? "" : ".").replace(",", ".") : wert;
+        if (sauber !== (beleg[eingabe.name] ?? null)) neu[eingabe.name] = sauber;
+      }
+    }
+    return sende("/belege/" + id, "PATCH", neu, "Gespeichert");
+  });
+  if (offen && darf("freigabe")) {
+    if (beleg.hinweise.some(h => h.code === "iban_neu" && h.stufe === "fehler")) knopf("Neue IBAN bestätigen", async () => {
+      const grund = prompt("Wie wurde die IBAN geprüft?");
+      if (grund) await sende(`/belege/${id}/iban-bestaetigung`, "POST", { grund }, "IBAN bestätigt");
+    });
+    knopf("Freigeben", () => sende(`/belege/${id}/freigabe`, "POST", null, "Freigegeben"), "haupt");
+    knopf("Ablehnen", async () => {
+      const grund = prompt("Grund der Ablehnung");
+      if (grund) await sende(`/belege/${id}/ablehnung`, "POST", { grund }, "Abgelehnt");
+    });
+  }
+  const ansicht = datei.type.startsWith("image/") ? el("img", { src:dateiUrl, alt:"Beleg", style:"max-width:100%" }) : el("iframe", { src:dateiUrl, title:"Beleg" });
+  $("detail").replaceChildren(
+    el("h2", { textContent:`Beleg ${id}: ${namen[beleg.status]}`, className:beleg.status }),
+    el("ul", { className:"hinweise" }, ...beleg.hinweise.map(h => el("li", { className:h.stufe, textContent:(h.stufe === "fehler" ? "Fehler: " : "Hinweis: ") + h.text }))),
+    formular, knoepfe, ansicht,
+    el("h2", { textContent:"Verlauf", style:"margin-top:14px" }),
+    el("ol", { className:"verlauf" }, ...verlauf.map(v => el("li", { textContent:`${new Date(v.zeitpunkt).toLocaleString("de-AT")} ${v.benutzer}: ${v.aktion}` }))));
+  await ladeListe();
+}
+
+async function start() {
+  ich = await holen("/ich");
+  sessionStorage.setItem("belegflow", token);
+  $("wer").textContent = `${ich.name} (${ich.rollen.join(", ")})`;
+  $("anmelden").hidden = true; $("anmelden").style.display = "none"; $("abmelden").hidden = false;
+  $("datei").disabled = !darf("buchhaltung") && !darf("eingang");
+  $("export").disabled = !darf("buchhaltung");
+  melde("");
+  await ladeListe();
+}
+$("anmelden").onsubmit = e => { e.preventDefault(); token = $("token").value.trim(); versuche(start); };
+$("abmelden").onclick = () => { sessionStorage.removeItem("belegflow"); location.reload(); };
+$("filter").onchange = () => versuche(ladeListe);
+$("datei").onchange = () => versuche(async () => {
+  const daten = new FormData();
+  daten.append("datei", $("datei").files[0]);
+  $("datei").value = "";
+  melde("Beleg wird ausgelesen");
+  const beleg = await (await api("/belege", "POST", daten)).json();
+  melde("Beleg erfasst");
+  await zeige(beleg.id);
+});
+$("export").onclick = () => versuche(async () => {
+  const datei = await (await api("/export", "POST")).blob();
+  const verweis = el("a", { href:URL.createObjectURL(datei), download:"belegflow_export.csv" });
+  verweis.click();
+  URL.revokeObjectURL(verweis.href);
+  melde("Export erstellt");
+  await ladeListe();
+});
+if (token) versuche(start);
+</script>
+</body>
+</html>
